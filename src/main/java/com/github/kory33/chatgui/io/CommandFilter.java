@@ -50,13 +50,13 @@ public class CommandFilter extends AbstractFilter implements Filter {
         if (msg == null) {
             return onMismatch;
         }
-        final String text = msg.getFormat();
+        final String text = msg.getFormattedMessage();
         return filter(text);
     }
 
     @Override
     public Result filter(LogEvent event) {
-        String text = event.getMessage().getFormat();
+        String text = event.getMessage().getFormattedMessage();
         return filter(text);
     }
 
