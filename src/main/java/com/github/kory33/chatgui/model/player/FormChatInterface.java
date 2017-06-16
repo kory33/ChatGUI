@@ -20,7 +20,7 @@ public abstract class FormChatInterface extends PlayerClickableChatInterface {
 
     private MessageParts inputCancelButton;
 
-    public FormChatInterface(Player player, RunnableInvoker runnableInvoker, PlayerChatInterceptor chatInterceptor) {
+    protected FormChatInterface(Player player, RunnableInvoker runnableInvoker, PlayerChatInterceptor chatInterceptor) {
         super(player, runnableInvoker);
         this.chatInterceptor = chatInterceptor;
     }

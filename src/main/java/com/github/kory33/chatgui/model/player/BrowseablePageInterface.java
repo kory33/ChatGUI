@@ -59,7 +59,7 @@ public abstract class BrowseablePageInterface extends PlayerClickableChatInterfa
 
     protected abstract String getPageDisplayComponent(int currentPageNumber, int maxPageNumber);
 
-    public BrowseablePageInterface(Player player, RunnableInvoker runnableInvoker,
+    protected BrowseablePageInterface(Player player, RunnableInvoker runnableInvoker,
                                    PlayerInteractiveInterfaceManager interfaceManager, int pageIndex) {
         super(player, runnableInvoker);
         this.interfaceManager = interfaceManager;
@@ -73,7 +73,7 @@ public abstract class BrowseablePageInterface extends PlayerClickableChatInterfa
      * @param oldInterface old interface instance
      * @param newIndex page number(starts from 0) of the new interface
      */
-    public BrowseablePageInterface(BrowseablePageInterface oldInterface, int newIndex) {
+    protected BrowseablePageInterface(BrowseablePageInterface oldInterface, int newIndex) {
         super(oldInterface.getTargetPlayer(), oldInterface.getRunnableInvoker());
         this.interfaceManager = oldInterface.interfaceManager;
         this.requestedPageIndex = newIndex;
