@@ -27,15 +27,14 @@ interface IFormChatInterface : IPlayerClickableChatInterface {
         this.inputCancelButton = null
     }
 
-    private // send footer
-            // notify cancellation
-            // re-send the interface
-    val cancelInputButton: MessageParts
+    // send footer
+    // notify cancellation
+    // re-send the interface
+    private val cancelInputButton: MessageParts
         get() {
             this.inputCancelButton = super.getButton({
                 this.chatInterceptor.cancelAnyInterception(this.targetPlayer, "Input cancelled.")
                 super.revokeButton(this.inputCancelButton!!)
-                MessageComponent(this.interfaceFooter).send(this.targetPlayer)
                 this.notifyInputCancellation()
                 this.send()
             }, this.getInputCancelButton())

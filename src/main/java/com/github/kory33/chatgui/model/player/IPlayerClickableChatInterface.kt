@@ -83,34 +83,13 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
     val bodyMessages: MessagePartsList
 
     /**
-     * Get the header line of the interface
-     * @return message component list representing the header
-     */
-    val interfaceHeader: MessagePartsList
-
-    /**
-     * Get the footer line of the interface
-     * @return message component list representing the footer
-     */
-    val interfaceFooter: MessagePartsList
-
-    /**
-     * Construct the interface in a form of:
+     * Construct the interface.
      *
-     * ```
-     * { header }
-     * { body content }
-     * { footer }
-     * ```
-     * Override this method only if the interface should be in other form.<br></br>
-     * Otherwise, [body content] part should be constructed by [IPlayerClickableChatInterface.bodyMessages] method.
+     * By default, the content of this interface will be equal to the return value of [bodyMessages]
+     *
+     * Override this method if the interface should be in other form.
      */
     override fun constructInterfaceMessages(): MessagePartsList {
-        val messagePartsList = MessagePartsList()
-        messagePartsList.addLine(this.interfaceHeader)
-        messagePartsList.addAll(this.bodyMessages)
-        messagePartsList.addAll(this.interfaceFooter)
-
-        return messagePartsList
+        return this.bodyMessages
     }
 }

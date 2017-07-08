@@ -12,7 +12,6 @@ import java.util.*
 interface IBrowseablePageInterface : IPlayerClickableChatInterface {
     var entryPerPage: Int
     var requestedPageIndex: Int
-        set
 
     val interfaceManager: PlayerInteractiveInterfaceManager
 
