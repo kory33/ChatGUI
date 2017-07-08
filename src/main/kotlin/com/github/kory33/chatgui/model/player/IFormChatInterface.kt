@@ -4,8 +4,6 @@ import com.github.kory33.chatgui.listener.PlayerChatInterceptor
 import com.github.kory33.chatgui.tellraw.MessagePartsList
 import com.github.ucchyocean.messaging.tellraw.MessageComponent
 import com.github.ucchyocean.messaging.tellraw.MessageParts
-import java.util.function.Consumer
-import java.util.function.Predicate
 
 /**
  * A class representing a player chat interface which is capable of accepting
@@ -53,15 +51,15 @@ interface IFormChatInterface : IPlayerClickableChatInterface {
         MessageComponent(messagePartsList).send(this.targetPlayer)
     }
 
-    private fun getInputToForm(onPlayerSendString: Consumer<String>, validator: Predicate<String>) {
+    private fun getInputToForm(onPlayerSendString: (String) -> Unit, validator:  (String) -> Boolean) {
         chatInterceptor.interceptFirstMessageFrom(this.targetPlayer)
                 .thenAccept { input ->
-                    if (!validator.test(input)) {
+                    if (!validator(input)) {
                         this.notifyInvalidInput()
                         this.getInputToForm(onPlayerSendString, validator)
                         return@thenAccept
                     }
-                    onPlayerSendString.accept(input)
+                    onPlayerSendString(input)
                     super.revokeButton(this.inputCancelButton!!)
                     this.send()
                 }
@@ -137,7 +135,7 @@ interface IFormChatInterface : IPlayerClickableChatInterface {
      * *
      * @return a list of message parts representing an input form
      */
-    fun getForm(onPlayerSendString: Consumer<String>, validator: Predicate<String>, label: String, value: String): MessagePartsList {
+    fun getForm(onPlayerSendString: (String) -> Unit, validator: (String) -> Boolean, label: String, value: String): MessagePartsList {
         val formName = MessageParts(this.getLabelString(label))
 
         val formValue = MessageParts(this.getValueString(value))

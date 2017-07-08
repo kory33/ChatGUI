@@ -10,9 +10,8 @@ import java.util.*
  * @author kory
  */
 interface IBrowseablePageInterface : IPlayerClickableChatInterface {
-    var entryPerPage: Int
-    var requestedPageIndex: Int
-
+    val entryPerPage: Int
+    val requestedPageIndex: Int
     val interfaceManager: PlayerInteractiveInterfaceManager
 
     /**
