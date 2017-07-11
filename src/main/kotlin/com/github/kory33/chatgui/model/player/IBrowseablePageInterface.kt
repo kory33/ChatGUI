@@ -115,7 +115,7 @@ interface IBrowseablePageInterface : IPlayerClickableChatInterface {
             val messagePartsList = MessagePartsList()
             messagePartsList.addAll(this.heading)
             messagePartsList.addAll(this.getTableBody(roundedPageIndex, entryList))
-            messagePartsList.addLine(this.getBrowseButtonLine(roundedPageIndex, maximumPageIndex))
+            messagePartsList.addAll(this.getBrowseButtonLine(roundedPageIndex, maximumPageIndex))
 
             return messagePartsList
         }
