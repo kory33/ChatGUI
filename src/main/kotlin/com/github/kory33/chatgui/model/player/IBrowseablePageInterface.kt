@@ -3,7 +3,6 @@ package com.github.kory33.chatgui.model.player
 import com.github.kory33.chatgui.manager.PlayerInteractiveInterfaceManager
 import com.github.kory33.chatgui.tellraw.MessagePartsList
 import com.github.ucchyocean.messaging.tellraw.MessageParts
-import java.util.*
 
 /**
  * A class representing an interface whose buttons at the bottom allow the player to move between pages.
