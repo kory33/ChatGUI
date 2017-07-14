@@ -4,6 +4,7 @@ import com.github.kory33.chatgui.command.RunnableInvoker
 import com.github.kory33.chatgui.tellraw.MessagePartsList
 import com.github.kory33.chatgui.util.collection.BijectiveHashMap
 import com.github.ucchyocean.messaging.tellraw.ClickEventType
+import com.github.ucchyocean.messaging.tellraw.HoverParts
 import com.github.ucchyocean.messaging.tellraw.MessageParts
 
 /**
@@ -50,16 +51,30 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
     /**
      * Get a message component which invokes the given runnable object when clicked.
      * @param runnable runnable to be run(synchronously) when the player clicks the button
-     * *
      * @param buttonString message that gets displayed as the button
-     * *
      * @return a button message component that is bound to the runnable object
      */
     fun getButton(runnable: () -> Unit, buttonString: String): MessageParts {
+        return getButton(runnable, buttonString, null)
+    }
+
+    /**
+     * Get a message component which invokes the given runnable object when clicked.
+     * @param runnable runnable to be run(synchronously) when the player clicks the button
+     * @param buttonString message that gets displayed as the button
+     * @param toolTipString string that gets displayed on mouse hover
+     * @return a button message component that is bound to the runnable object
+     */
+    fun getButton(runnable: () -> Unit, buttonString: String, toolTipString: String?): MessageParts {
         val button = MessageParts(buttonString)
         val command = this.runnableInvoker.registerRunnable(runnable, false)
         button.setClickEvent(ClickEventType.RUN_COMMAND, command.commandString)
         this.buttonIdMapping.put(button, command.runnableId)
+
+        if (toolTipString != null) {
+            button.setHoverParts(HoverParts(toolTipString))
+        }
+
         return button
     }
 
