@@ -108,7 +108,7 @@ interface IBrowseablePageInterface : IPlayerClickableChatInterface {
     override val bodyMessages: MessagePartsList
         get() {
             val entryList = this.entryList
-            val maximumPageIndex = Math.floor(entryList.size * 1.0 / this.entryPerPage).toInt()
+            val maximumPageIndex = (entryList.size - 1) / this.entryPerPage
             val roundedPageIndex = Math.min(Math.max(0, this.requestedPageIndex), maximumPageIndex)
 
             val messagePartsList = MessagePartsList()
