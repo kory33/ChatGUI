@@ -32,6 +32,6 @@ class RunnableCommand (private val runnableInvoker: RunnableInvoker,
 
     companion object {
         const val ASYNC_MODIFIER = "async"
-        const val FALLBACK_PREFIX = "runnableinvoker"
+        const val FALLBACK_PREFIX = "invokerunnable"
     }
 }
