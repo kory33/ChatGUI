@@ -24,7 +24,7 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
      */
     fun revokeAllRunnables() {
         // remove all the bound runnable objects
-        this.buttonIdMapping.values.forEach { this.runnableInvoker.cancelTask(it) }
+        this.buttonIdMapping.values.forEach { this.runnableInvoker.removeRunnable(it) }
         this.buttonIdMapping.clear()
     }
 
@@ -34,7 +34,7 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
     fun revokeButton(buttonMessagePart: MessageParts) {
         val runnableId = this.buttonIdMapping[buttonMessagePart] ?: return
 
-        this.runnableInvoker.cancelTask(runnableId)
+        this.runnableInvoker.removeRunnable(runnableId)
         this.buttonIdMapping.removeKey(buttonMessagePart)
     }
 
