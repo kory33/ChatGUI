@@ -38,11 +38,5 @@ class BijectiveHashMap<K, V> : MutableBijectiveMap<K, V> {
 
     override fun clear() = this.map.clear().also { this.inverseMap.clear() }
 
-    override operator fun get(key: K) = this.map[key]
-
-    override fun containsKey(key: K) = this.map.containsKey(key)
-
-    override fun containsValue(value: V) = this.inverseMap.containsKey(value)
-
     override fun toMap() = map.toMap()
 }

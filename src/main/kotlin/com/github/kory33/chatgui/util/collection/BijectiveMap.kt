@@ -1,34 +1,10 @@
 package com.github.kory33.chatgui.util.collection
 
-interface BijectiveMap<K, V> {
+interface BijectiveMap<K, V> : Map<K, V> {
     /**
      * An inverse of the map.
      */
     val inverse: BijectiveMap<V, K>
-
-    /**
-     * Returns `true` if the map is empty (contains no elements), `false` otherwise.
-     */
-    fun isEmpty() = toMap().isEmpty()
-
-    /**
-     * Returns the value corresponding to the given [key], or `null` if such a key is not present in the map.
-     */
-    operator fun get(key: K): V?
-
-    /**
-     * Returns a boolean value representing if the map contains the given key.
-     *
-     * @return true if the map contains the given key
-     */
-    fun containsKey(key: K): Boolean
-
-    /**
-     * Returns a boolean value representing if the map contains the given value.
-     *
-     * @return true if the map contains the given value
-     */
-    fun containsValue(value: V): Boolean
 
     /**
      * Returns a new read-only map containing all key-value pairs from the original map.
@@ -36,4 +12,24 @@ interface BijectiveMap<K, V> {
      * The returned map preserves the entry iteration order of the original map.
      */
     fun toMap(): Map<K, V>
+
+    override val size: Int
+        get() = toMap().size
+
+    override val entries: Set<Map.Entry<K, V>>
+        get() = toMap().entries
+
+    override val keys: Set<K>
+        get() = toMap().keys
+
+    override val values: Set<V>
+        get() = inverse.toMap().keys
+
+    override fun get(key: K) = toMap()[key]
+
+    override fun containsKey(key: K) = toMap().containsKey(key)
+
+    override fun containsValue(value: V) = inverse.containsKey(value)
+
+    override fun isEmpty() = toMap().isEmpty()
 }
