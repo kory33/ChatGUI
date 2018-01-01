@@ -1,10 +1,8 @@
 package com.github.kory33.chatgui.command
 
-import com.github.kory33.chatgui.io.CommandFilter
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.core.Logger
-import org.bukkit.Bukkit
-import org.bukkit.command.CommandMap
+import com.github.kory33.chatgui.util.bukkit.getCommandMap
+import com.github.kory33.chatgui.util.io.CommandFilterManager
+import com.github.kory33.chatgui.util.random.nextLongNotIn
 import org.bukkit.command.CommandSender
 import org.bukkit.command.defaults.BukkitCommand
 import org.bukkit.plugin.java.JavaPlugin
@@ -16,17 +14,16 @@ import java.util.*
  * @author Kory
  */
 class RunnableInvoker private constructor(private val plugin: JavaPlugin, commandRoot: String)
-    : BukkitCommand(plugin.name.toLowerCase() + ":" + commandRoot) {
+    : BukkitCommand("${plugin.name.toLowerCase()}:$commandRoot") {
 
     private val runnableTable: HashMap<Long, () -> Unit> = HashMap()
     private val randomGenerator: Random = Random()
     private val scheduler: BukkitScheduler = plugin.server.scheduler
 
-    private val rootCommandString: String
-        get() = "/" + FALLBACK_PREFIX + ":" + this.name
+    private val rootCommandString = "/$FALLBACK_PREFIX:${this.name}"
 
     private fun getCommandString(runnableId: Long, async: Boolean): String {
-        return this.rootCommandString + " " + runnableId + if (async) " " + ASYNC_MODIFIER else ""
+        return "${this.rootCommandString} $runnableId" + if (async) " $ASYNC_MODIFIER" else ""
     }
 
     /**
@@ -38,17 +35,10 @@ class RunnableInvoker private constructor(private val plugin: JavaPlugin, comman
      * @return [RunnableCommand] object containing runnable id and command to cancel/invoke the runnable
      */
     fun registerRunnable(runnable: () -> Unit, isAsync: Boolean): RunnableCommand {
-        while (true) {
-            val runnableId = this.randomGenerator.nextLong()
+        val newRunnableId = this.randomGenerator.nextLongNotIn(this.runnableTable.keys)
 
-            // re-generate id if the generated one is already registered
-            if (this.runnableTable.containsKey(runnableId)) {
-                continue
-            }
-
-            this.runnableTable.put(runnableId, runnable)
-            return RunnableCommand(this.getCommandString(runnableId, isAsync), runnableId)
-        }
+        this.runnableTable.put(newRunnableId, runnable)
+        return RunnableCommand(this.getCommandString(newRunnableId, isAsync), newRunnableId)
     }
 
     /**
@@ -64,59 +54,35 @@ class RunnableInvoker private constructor(private val plugin: JavaPlugin, comman
             return true
         }
 
-        try {
-            val runnableId = java.lang.Long.parseLong(args[0])
-            val runnable = this.runnableTable[runnableId] ?: return true
+        val runnableId = args[0].toLongOrNull() ?: return true
+        val runnable = this.runnableTable[runnableId] ?: return true
 
-            if (args.size > 1 && args[1].equals(ASYNC_MODIFIER, ignoreCase = true)) {
-                this.scheduler.runTaskAsynchronously(this.plugin, runnable)
-            } else {
-                this.scheduler.runTask(this.plugin, runnable)
-            }
-        } catch (exception: NumberFormatException) {
-            return true
+        if (args.size > 1 && args[1] == ASYNC_MODIFIER) {
+            this.scheduler.runTaskAsynchronously(this.plugin, runnable)
+        } else {
+            this.scheduler.runTask(this.plugin, runnable)
         }
 
         return true
     }
 
-    private fun addInvocationSuppressFilter() {
-        if (invocationSuppressedPlugins.contains(this.plugin)) {
-            return
-        }
-        (LogManager.getRootLogger() as Logger).addFilter(CommandFilter(this.rootCommandString))
-        invocationSuppressedPlugins.add(this.plugin)
-    }
-
     companion object {
-        private val DEFAULT_COMMAND_ROOT = "run"
-        private val ASYNC_MODIFIER = "async"
-        private val FALLBACK_PREFIX = "runnableinvoker"
+        private const val DEFAULT_COMMAND_ROOT = "run"
+        private const val ASYNC_MODIFIER = "async"
+        private const val FALLBACK_PREFIX = "runnableinvoker"
 
-        private val invocationSuppressedPlugins = HashSet<JavaPlugin>()
+        private val commandFilterManager = CommandFilterManager()
 
-        @JvmOverloads fun getRegisteredInstance(plugin: JavaPlugin, runCommandRoot: String = DEFAULT_COMMAND_ROOT, suppressCommand: Boolean = true): RunnableInvoker? {
-            val commandExecutor = RunnableInvoker(plugin, runCommandRoot)
-
-            try {
-                val bukkitCommandMap = Bukkit.getServer().javaClass.getDeclaredField("commandMap")
-                bukkitCommandMap.isAccessible = true
-                val commandMap = bukkitCommandMap.get(Bukkit.getServer()) as CommandMap
-                commandMap.register(commandExecutor.name, FALLBACK_PREFIX, commandExecutor)
+        @JvmOverloads fun getRegisteredInstance(plugin: JavaPlugin,
+                                                runCommandRoot: String = DEFAULT_COMMAND_ROOT,
+                                                suppressCommand: Boolean = true): RunnableInvoker? {
+            return RunnableInvoker(plugin, runCommandRoot).also {
+                plugin.server.getCommandMap().register(it.name, FALLBACK_PREFIX, it)
 
                 if (suppressCommand) {
-                    commandExecutor.addInvocationSuppressFilter()
+                    commandFilterManager.addFilterFor(it.rootCommandString)
                 }
-
-                return commandExecutor
-            } catch (e: NoSuchFieldException) {
-                e.printStackTrace()
-                return null
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
-                return null
             }
-
         }
     }
 }

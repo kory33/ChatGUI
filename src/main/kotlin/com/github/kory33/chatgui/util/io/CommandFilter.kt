@@ -1,4 +1,4 @@
-package com.github.kory33.chatgui.io
+package com.github.kory33.chatgui.util.io
 
 import com.github.kory33.chatgui.model.player.IPlayerClickableChatInterface
 import org.apache.logging.log4j.Level
