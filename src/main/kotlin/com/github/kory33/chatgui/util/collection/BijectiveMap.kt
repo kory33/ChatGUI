@@ -1,13 +1,15 @@
 package com.github.kory33.chatgui.util.collection
 
 interface BijectiveMap<K, V> {
-    val keys: Set<K>
-        get() = toMap().keys
-
-    val values: Set<V>
-        get() = inverse.keys
-
+    /**
+     * An inverse of the map.
+     */
     val inverse: BijectiveMap<V, K>
+
+    /**
+     * Returns `true` if the map is empty (contains no elements), `false` otherwise.
+     */
+    fun isEmpty() = toMap().isEmpty()
 
     /**
      * Returns the value corresponding to the given [key], or `null` if such a key is not present in the map.

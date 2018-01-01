@@ -3,6 +3,7 @@ package com.github.kory33.chatgui.model.player
 import com.github.kory33.chatgui.command.RunnableInvoker
 import com.github.kory33.chatgui.tellraw.MessagePartsList
 import com.github.kory33.chatgui.util.collection.BijectiveHashMap
+import com.github.kory33.chatgui.util.collection.*
 import com.github.ucchyocean.messaging.tellraw.ClickEventType
 import com.github.ucchyocean.messaging.tellraw.HoverParts
 import com.github.ucchyocean.messaging.tellraw.MessageParts
