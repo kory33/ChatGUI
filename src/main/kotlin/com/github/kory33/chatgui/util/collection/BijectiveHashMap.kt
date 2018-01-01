@@ -1,30 +1,72 @@
 package com.github.kory33.chatgui.util.collection
 
-class BijectiveHashMap<K, V> : HashMap<K, V> {
-    private val inverse: HashMap<V, K>
+class BijectiveHashMap<K, V> {
+    private val map: MutableMap<K, V>
+    private val inverse: MutableMap<V, K>
+
+    val values
+        get() = inverse.keys
+    val keys
+        get() = map.keys
 
     constructor() {
-        this.inverse = HashMap<V, K>()
+        this.map = HashMap()
+        this.inverse = HashMap()
     }
 
-    private constructor(map: HashMap<K, V>, inverse: HashMap<V, K>) : super(map) {
-        this.inverse = HashMap(inverse)
+    constructor(bMap: BijectiveHashMap<K, V>) : this(bMap.map, bMap.inverse)
+
+    private constructor(map: Map<K, V>, inverse: Map<V, K>) {
+        this.map = map.toMutableMap()
+        this.inverse = inverse.toMutableMap()
     }
 
-    constructor(bMap: BijectiveHashMap<K, V>) : this(bMap, bMap.inverse)
-
-    override fun put(key: K, value: V): V? {
+    /**
+     * Put a mapping from the given key to the given value.
+     *
+     * This method throws an [IllegalArgumentException]
+     * if the mapping from the given key or to the given value already exists.
+     */
+    fun put(key: K, value: V) {
         if (this.containsKey(key)) {
-            this.inverse.remove(this[key])
+            throw IllegalArgumentException("There already exists a mapping from the given key.")
         }
 
-        if (this.inverse.containsKey(value)) {
+        if (this.containsValue(value)) {
             throw IllegalArgumentException("There already exists a mapping to the given value.")
         }
 
-        this.inverse.put(value, key)
-        return super.put(key, value)
+        map.put(key, value)
+        inverse.put(value, key)
     }
+
+    /**
+     * Put a mapping corresponding to the given pair.
+     *
+     * This method throws an [IllegalArgumentException]
+     * if the mapping from the given key or to the given value already exists.
+     */
+    fun put(pair: Pair<K, V>) = put(pair.first, pair.second)
+
+    /**
+     * Updates a key bind to a value.
+     *
+     * When there already exists a mapping of
+     * oldKey -> [value], this method replaces the mapping to
+     * [key] -> [value].
+     */
+    fun updateKey(key: K, value: V) = removeValue(value).run { put(key, value) }
+
+    /**
+     * Updates a key bind to a value.
+     *
+     * When there already exists a mapping of
+     * [key] -> oldValue, this method replaces the mapping to
+     * [key] -> [value].
+     */
+    fun updateValue(key: K, value: V) = removeKey(key).run { put(key, value) }
+
+    fun updatePair(key: K, value: V) = updateKey(key, value).run { updateValue(key, value) }
 
     /**
      * Remove the mapping pair which has the given key.
@@ -32,15 +74,7 @@ class BijectiveHashMap<K, V> : HashMap<K, V> {
      * *
      * @return value which was mapped from removed key. Null if the key was not in the key set.
      */
-    override fun remove(key: K): V? {
-        if (!this.containsKey(key)) {
-            return null
-        }
-
-        val removed = super.remove(key)
-        this.inverse.remove(removed)
-        return removed
-    }
+    fun removeKey(key: K) = this.map.remove(key)?.also { this.inverse.remove(it) }
 
     /**
      * Remove the mapping pair which has the given value.
@@ -48,21 +82,37 @@ class BijectiveHashMap<K, V> : HashMap<K, V> {
      * *
      * @return key which was mapped to removed value. Null if the value was not in the value set.
      */
-    fun removeValue(value: V): K? {
-        val removed = this.inverse.remove(value)
-
-        if (removed != null) {
-            this.remove(removed)
-        }
-
-        return removed
-    }
+    fun removeValue(value: V) = this.inverse.remove(value)?.also { this.map.remove(it) }
 
     /**
-     * Get an inverse of the map.
+     * Clear the entire map.
+     */
+    fun clear() = this.map.clear().also { this.inverse.clear() }
+
+    /**
+     * Returns the value corresponding to the given [key], or `null` if such a key is not present in the map.
+     */
+    operator fun get(key: K) = this.map[key]
+
+    /**
+     * Returns a boolean value representing if the map contains the given key.
+     *
+     * @return true if the map contains the given key
+     */
+    fun containsKey(key: K) = this.map.containsKey(key)
+
+    /**
+     * Returns a boolean value representing if the map contains the given value.
+     *
+     * @return true if the map contains the given value
+     */
+    fun containsValue(value: V) = this.inverse.containsKey(value)
+
+    /**
+     * Returns an inverse of the map.
      * @return inverse map
      */
     fun getInverse(): BijectiveHashMap<V, K> {
-        return BijectiveHashMap(this.inverse, this)
+        return BijectiveHashMap(this.inverse, this.map)
     }
 }

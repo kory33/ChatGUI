@@ -35,7 +35,7 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
         val runnableId = this.buttonIdMapping[buttonMessagePart] ?: return
 
         this.runnableInvoker.cancelTask(runnableId)
-        this.buttonIdMapping.remove(buttonMessagePart)
+        this.buttonIdMapping.removeKey(buttonMessagePart)
     }
 
     /**
