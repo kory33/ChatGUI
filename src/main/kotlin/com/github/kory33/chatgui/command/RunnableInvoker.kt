@@ -29,16 +29,14 @@ class RunnableInvoker private constructor(private val plugin: JavaPlugin, comman
     /**
      * Get a command that is able to invoke the given runnable object
      * @param runnable target runnable object
-     * *
      * @param isAsync specify whether or not the runnable should be invoked asynchronously
-     * *
-     * @return [RunnableCommand] object containing runnable id and command to cancel/invoke the runnable
+     * @return [RunnableCommandData] object containing runnable id and command to cancel/invoke the runnable
      */
-    fun registerRunnable(runnable: () -> Unit, isAsync: Boolean): RunnableCommand {
+    fun registerRunnable(runnable: () -> Unit, isAsync: Boolean): RunnableCommandData {
         val newRunnableId = this.randomGenerator.nextLongNotIn(this.runnableTable.keys)
 
         this.runnableTable.put(newRunnableId, runnable)
-        return RunnableCommand(this.getCommandString(newRunnableId, isAsync), newRunnableId)
+        return RunnableCommandData(this.getCommandString(newRunnableId, isAsync), newRunnableId)
     }
 
     /**
