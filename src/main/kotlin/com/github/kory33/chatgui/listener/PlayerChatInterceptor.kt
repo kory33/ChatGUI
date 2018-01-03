@@ -20,7 +20,7 @@ class PlayerChatInterceptor(hostPlugin: JavaPlugin) : Listener {
 
     init {
         hostPlugin.server.pluginManager.registerEvents(this, hostPlugin)
-        this.interceptionFutureMap = HashMap<Player, CompletableFuture<String>>()
+        this.interceptionFutureMap = HashMap()
     }
 
     /**
@@ -47,7 +47,6 @@ class PlayerChatInterceptor(hostPlugin: JavaPlugin) : Listener {
     /**
      * Cancel chat interception task associated with a given player, if there exists any.
      * @param player target player whose chat message interception is cancelled
-     * *
      * @param cancelReason reason for cancellation(optional)
      */
     fun cancelAnyInterception(player: Player, cancelReason: String) {
@@ -59,7 +58,6 @@ class PlayerChatInterceptor(hostPlugin: JavaPlugin) : Listener {
     /**
      * Intercept the first message sent by the given player.
      * @param sourcePlayer target player whose first chat message is to be intercepted
-     * *
      * @return a completable future which completes with a first message from the player
      */
     fun interceptFirstMessageFrom(sourcePlayer: Player): CompletableFuture<String> {
