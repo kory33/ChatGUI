@@ -1,5 +1,7 @@
-package com.github.kory33.chatgui.command
+package com.github.kory33.chatgui.manager
 
+import com.github.kory33.chatgui.command.RunnableCommand
+import com.github.kory33.chatgui.command.RunnableCommandData
 import com.github.kory33.chatgui.util.io.CommandFilterManager
 import com.github.kory33.chatgui.util.random.nextLongNotIn
 import org.bukkit.plugin.java.JavaPlugin
@@ -10,13 +12,21 @@ import java.util.*
  * Class which handles registrations and invocations of runnable objects through Bukkit's command interface.
  * @author Kory
  */
-class RunnableInvoker private constructor(private val plugin: JavaPlugin, commandRoot: String) {
+class RunnableManager @JvmOverloads constructor(private val plugin: JavaPlugin,
+                                                commandRoot: String = DEFAULT_COMMAND_ROOT,
+                                                suppressCommand: Boolean = true) {
     private val runnableTable = HashMap<Long, () -> Unit>()
     private val randomGenerator = Random()
     private val scheduler = plugin.server.scheduler
 
     private val command = RunnableCommand(this, plugin, commandRoot)
 
+    init {
+        if (suppressCommand) {
+            commandFilterManager.addFilterFor(command.rootString)
+        }
+    }
+    
     /**
      * Get a command that is able to invoke the given runnable object
      * @param runnable target runnable object
@@ -56,15 +66,5 @@ class RunnableInvoker private constructor(private val plugin: JavaPlugin, comman
         private const val DEFAULT_COMMAND_ROOT = "run"
 
         private val commandFilterManager = CommandFilterManager()
-
-        @JvmOverloads fun getRegisteredInstance(plugin: JavaPlugin,
-                                                runCommandRoot: String = DEFAULT_COMMAND_ROOT,
-                                                suppressCommand: Boolean = true): RunnableInvoker? {
-            return RunnableInvoker(plugin, runCommandRoot).also {
-                if (suppressCommand) {
-                    commandFilterManager.addFilterFor(it.command.rootString)
-                }
-            }
-        }
     }
 }

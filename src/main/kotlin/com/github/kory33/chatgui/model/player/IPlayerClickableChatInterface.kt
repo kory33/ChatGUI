@@ -1,6 +1,6 @@
 package com.github.kory33.chatgui.model.player
 
-import com.github.kory33.chatgui.command.RunnableInvoker
+import com.github.kory33.chatgui.manager.RunnableManager
 import com.github.kory33.chatgui.tellraw.MessagePartsList
 import com.github.kory33.chatgui.util.collection.BijectiveHashMap
 import com.github.ucchyocean.messaging.tellraw.ClickEventType
@@ -17,14 +17,14 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
         set
 
     val buttonIdMapping: BijectiveHashMap<MessageParts, Long>
-    val runnableInvoker: RunnableInvoker
+    val runnableManager: RunnableManager
 
     /**
      * Revoke all runnables bound to this interface.
      */
     fun revokeAllRunnables() {
         // remove all the bound runnable objects
-        this.buttonIdMapping.values.forEach { this.runnableInvoker.removeRunnable(it) }
+        this.buttonIdMapping.values.forEach { this.runnableManager.removeRunnable(it) }
         this.buttonIdMapping.clear()
     }
 
@@ -34,7 +34,7 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
     fun revokeButton(buttonMessagePart: MessageParts) {
         val runnableId = this.buttonIdMapping[buttonMessagePart] ?: return
 
-        this.runnableInvoker.removeRunnable(runnableId)
+        this.runnableManager.removeRunnable(runnableId)
         this.buttonIdMapping.removeKey(buttonMessagePart)
     }
 
@@ -67,7 +67,7 @@ interface IPlayerClickableChatInterface : IPlayerChatInterface {
      */
     fun getButton(runnable: () -> Unit, buttonString: String, toolTipString: String?): MessageParts {
         val button = MessageParts(buttonString)
-        val command = this.runnableInvoker.registerRunnable(runnable, false)
+        val command = this.runnableManager.registerRunnable(runnable, false)
         button.setClickEvent(ClickEventType.RUN_COMMAND, command.commandString)
         this.buttonIdMapping.put(button, command.runnableId)
 

@@ -1,11 +1,12 @@
 package com.github.kory33.chatgui.command
 
+import com.github.kory33.chatgui.manager.RunnableManager
 import com.github.kory33.chatgui.util.bukkit.getCommandMap
 import org.bukkit.command.CommandSender
 import org.bukkit.command.defaults.BukkitCommand
 import org.bukkit.plugin.java.JavaPlugin
 
-class RunnableCommand (private val runnableInvoker: RunnableInvoker,
+class RunnableCommand (private val runnableManager: RunnableManager,
                        plugin: JavaPlugin,
                        commandRoot: String)
     : BukkitCommand("${plugin.name.toLowerCase()}:$commandRoot") {
@@ -22,10 +23,10 @@ class RunnableCommand (private val runnableInvoker: RunnableInvoker,
         }
 
         val runnableId = args[0].toLongOrNull() ?: return true
-        val runnable = runnableInvoker[runnableId] ?: return true
+        val runnable = runnableManager[runnableId] ?: return true
 
         val executeAsync = args.size > 1 && args[1] == ASYNC_MODIFIER
-        runnableInvoker.execute(executeAsync, runnable)
+        runnableManager.execute(executeAsync, runnable)
 
         return true
     }
