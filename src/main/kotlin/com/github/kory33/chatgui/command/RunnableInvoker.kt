@@ -37,6 +37,13 @@ class RunnableInvoker private constructor(private val plugin: JavaPlugin, comman
     fun removeRunnable(runnableId: Long) = this.runnableTable.remove(runnableId)
 
     /**
+     * Get a runnable corresponding to the given runnable id
+     * 
+     * @return Instance of `() -> Unit`, `null` if no runnable is registered with the [runnableId]
+     */
+    operator fun get(runnableId: Long) = this.runnableTable[runnableId]
+    
+    /**
      * Execute the task synchronously or asynchronously using a scheduler provided from Bukkit.
      */
     fun execute(async: Boolean, task: () -> Unit): BukkitTask = if (async) {

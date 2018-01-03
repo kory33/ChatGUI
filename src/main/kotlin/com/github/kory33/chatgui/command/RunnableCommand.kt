@@ -22,7 +22,7 @@ class RunnableCommand (private val runnableInvoker: RunnableInvoker,
         }
 
         val runnableId = args[0].toLongOrNull() ?: return true
-        val runnable = runnableInvoker.removeRunnable(runnableId) ?: return true
+        val runnable = runnableInvoker[runnableId] ?: return true
 
         val executeAsync = args.size > 1 && args[1] == ASYNC_MODIFIER
         runnableInvoker.execute(executeAsync, runnable)
